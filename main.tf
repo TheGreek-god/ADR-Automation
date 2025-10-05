@@ -189,3 +189,20 @@ resource "azurerm_storage_account" "primary" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
+
+# Creates a storage account
+resource "azurerm_storage_account" "SA" {
+  name                     = var.storage_account_name
+  resource_group_name      = azurerm_resource_group.primary.name
+  location                 = azurerm_resource_group.primary.location
+  account_tier             = var.storage_account_tier
+  account_replication_type = var.storage_account_replication_type
+}
+
+# Creates a storage container for storing terraform state file
+resource "azurerm_storage_container" "SC" {
+  name                  = var.storage_container_name
+  storage_account_name    = azurerm_storage_account.SA.name
+  container_access_type = var.storage_container_access_type
+}
+
