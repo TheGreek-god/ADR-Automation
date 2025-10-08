@@ -1,14 +1,14 @@
 trigger: none
 
 pool:
-  name: my-pool-01
+  name: my-pool-01  # Your Windows agent pool
 
-  variables:
+variables:
 #   bkstrgrg: asr-primary-dev
 #   bkstrg: okekestorage
 #   bkcontainer: tfstatefile
 #   bkstrgkey: terraform.tfstate
-   serviceConnection: terraform-conn   # <- Replace this with your Azure DevOps service connection name
+  serviceConnection: terraform-conn   # <- Replace this with your Azure DevOps service connection name
 
 stages:
   - stage: tfvalidate
@@ -16,10 +16,8 @@ stages:
       - job: validate
         continueOnError: false
         steps:
-          - script: |
-              sudo apt-get update
-              sudo apt-get install -y unzip
-            displayName: 'Install unzip'
+          - script: choco install unzip -y
+            displayName: 'Install unzip (Windows)'
 
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
@@ -49,10 +47,8 @@ stages:
     jobs:
       - job: apply
         steps:
-          - script: |
-              sudo apt-get update
-              sudo apt-get install -y unzip
-            displayName: 'Install unzip'
+          - script: choco install unzip -y
+            displayName: 'Install unzip (Windows)'
 
           - task: TerraformInstaller@1
             displayName: 'Install Terraform'
@@ -86,7 +82,7 @@ stages:
 
   - stage: tfdestroy
     displayName: "Terraform Destroy"
-    condition: false  # You can change this to automated if preferred
+    condition: false  # Change to true or automated if you want it to run automatically
     jobs:
       - job: destroy
         steps:
