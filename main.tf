@@ -57,7 +57,7 @@ resource "azurerm_public_ip" "secondary" {
   allocation_method   = "Static"
   location            = azurerm_resource_group.secondary.location
   resource_group_name = azurerm_resource_group.secondary.name
-  sku                 = "Basic"
+  sku                 = "Standard"
 }
 
 # Create a network interface for the virtual machine
