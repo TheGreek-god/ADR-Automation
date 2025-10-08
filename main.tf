@@ -202,7 +202,7 @@ resource "azurerm_storage_account" "SA" {
 # Creates a storage container for storing terraform state file
 resource "azurerm_storage_container" "SC" {
   name                  = var.storage_container_name
-  storage_account_name    = azurerm_storage_account.SA.name
+  storage_account_id    = azurerm_storage_account.SA.name
   container_access_type = var.storage_container_access_type
 }
 
