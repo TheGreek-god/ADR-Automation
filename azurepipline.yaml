@@ -3,12 +3,12 @@ trigger: none
 pool:
   name: my-pool-01
 
-# variables:
+  variables:
 #   bkstrgrg: asr-primary-dev
 #   bkstrg: okekestorage
 #   bkcontainer: tfstatefile
 #   bkstrgkey: terraform.tfstate
-#   serviceConnection: terraform-conn   # <- Replace this with your Azure DevOps service connection name
+   serviceConnection: terraform-conn   # <- Replace this with your Azure DevOps service connection name
 
 stages:
   - stage: tfvalidate
