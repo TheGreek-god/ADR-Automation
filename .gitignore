@@ -71,5 +71,3 @@ terraform.rc
 .terraform.*
 # Ignore environment Variables
 .env
-# Ignore variable.tf
-variable.tf
