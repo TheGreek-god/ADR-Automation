@@ -4,10 +4,6 @@ pool:
   name: my-pool-01  # Your Windows agent pool
 
 variables:
-#   bkstrgrg: asr-primary-dev
-#   bkstrg: okekestorage
-#   bkcontainer: tfstatefile
-#   bkstrgkey: terraform.tfstate
   serviceConnection: terraform-conn   # <- Replace this with your Azure DevOps service connection name
 
 stages:
@@ -29,12 +25,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              # backendServiceArm: '$(serviceConnection)'
-              # backendAzureRmResourceGroupName: '$(bkstrgrg)'
-              # backendAzureRmStorageAccountName: '$(bkstrg)'
-              # backendAzureRmContainerName: '$(bkcontainer)'
-              # backendAzureRmKey: '$(bkstrgkey)'
-
+              
           - task: TerraformTaskV4@4
             displayName: 'Terraform Validate'
             inputs:
@@ -60,11 +51,6 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              # backendServiceArm: '$(serviceConnection)'
-              # backendAzureRmResourceGroupName: '$(bkstrgrg)'
-              # backendAzureRmStorageAccountName: '$(bkstrg)'
-              # backendAzureRmContainerName: '$(bkcontainer)'
-              # backendAzureRmKey: '$(bkstrgkey)'
 
           - task: TerraformTaskV4@4
             displayName: 'Terraform Plan'
@@ -96,12 +82,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              # backendServiceArm: '$(serviceConnection)'
-              # backendAzureRmResourceGroupName: '$(bkstrgrg)'
-              # backendAzureRmStorageAccountName: '$(bkstrg)'
-              # backendAzureRmContainerName: '$(bkcontainer)'
-              # backendAzureRmKey: '$(bkstrgkey)'
-
+              
           - task: TerraformTaskV4@4
             displayName: "Terraform Destroy"
             inputs:
