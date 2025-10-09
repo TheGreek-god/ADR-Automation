@@ -1,7 +1,7 @@
 variable "subscription_id" {
   description = "Azure Subscription ID"
   type        = string
-  default     = "T339c2081-e9b6-4404-a749-6a57e9c8f02e"
+  default     = "339c2081-e9b6-4404-a749-6a57e9c8f02e"
 }
 
 # Define the primary location for resources
