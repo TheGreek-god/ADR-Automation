@@ -116,6 +116,42 @@ resource "azurerm_recovery_services_vault" "vault" {
   location            = azurerm_resource_group.secondary.location
   resource_group_name = azurerm_resource_group.secondary.name
   sku                 = "Standard"
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+# Creates a storage account for staging data during replication
+resource "azurerm_storage_account" "primary" {
+  name                     = "primarystaging${var.environment}"
+  location                 = azurerm_resource_group.primary.location
+  resource_group_name      = azurerm_resource_group.primary.name
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  shared_access_key_enabled       = true
+  default_to_oauth_authentication = true
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  tags = {
+    environment = var.environment
+  }
+}
+
+# Role assignments for PRIMARY storage (ONLY THESE TWO - remove duplicates)
+resource "azurerm_role_assignment" "vault_primary_contributor" {
+  scope                = azurerm_storage_account.primary.id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_recovery_services_vault.vault.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "vault_primary_blob" {
+  scope                = azurerm_storage_account.primary.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_recovery_services_vault.vault.identity[0].principal_id
 }
 
 # Configure a Site Recovery Fabric for the primary region
@@ -124,6 +160,11 @@ resource "azurerm_site_recovery_fabric" "primary" {
   resource_group_name = azurerm_resource_group.secondary.name
   recovery_vault_name = azurerm_recovery_services_vault.vault.name
   location            = azurerm_resource_group.primary.location
+
+  depends_on = [
+    azurerm_role_assignment.vault_primary_contributor,
+    azurerm_role_assignment.vault_primary_blob
+  ]
 }
 
 # Configure a Site Recovery Fabric for the secondary region
@@ -132,6 +173,11 @@ resource "azurerm_site_recovery_fabric" "secondary" {
   resource_group_name = azurerm_resource_group.secondary.name
   recovery_vault_name = azurerm_recovery_services_vault.vault.name
   location            = azurerm_resource_group.secondary.location
+
+  depends_on = [
+    azurerm_role_assignment.vault_primary_contributor,
+    azurerm_role_assignment.vault_primary_blob
+  ]
 }
 
 # Create a protection container for the primary region
@@ -179,13 +225,4 @@ resource "azurerm_site_recovery_network_mapping" "network-mapping" {
   target_recovery_fabric_name = azurerm_site_recovery_fabric.secondary.name
   source_network_id           = azurerm_virtual_network.primary.id
   target_network_id           = azurerm_virtual_network.secondary.id
-}
-
-# Creates a storage account for staging data during replication
-resource "azurerm_storage_account" "primary" {
-  name                     = "primarystaging"
-  location                 = azurerm_resource_group.primary.location
-  resource_group_name      = azurerm_resource_group.primary.name
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
 }
